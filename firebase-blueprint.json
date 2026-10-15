@@ -1,0 +1,200 @@
+{
+  "entities": {
+    "Driver": {
+      "title": "Driver",
+      "description": "Independent driver profile with permanent driver ID",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique driver ID" },
+        "ownerId": { "type": "string", "description": "UID of the owner" },
+        "name": { "type": "string", "description": "Driver name" },
+        "vehicleCategory": { "type": "string", "description": "Optional default vehicle category" },
+        "vehicleReg": { "type": "string", "description": "Optional default vehicle registration" },
+        "phone": { "type": "string", "description": "Optional contact number" },
+        "createdAt": { "type": "string", "description": "ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["ownerId", "name"]
+    },
+    "KantaEntry": {
+      "title": "KantaEntry",
+      "description": "Daily computerized weighing record linked strictly to one driver ID",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique entry ID" },
+        "ownerId": { "type": "string", "description": "UID of the owner" },
+        "driverId": { "type": "string", "description": "Permanent driver ID" },
+        "driverName": { "type": "string", "description": "Driver name" },
+        "date": { "type": "string", "description": "Weighing date YYYY-MM-DD" },
+        "vehicleCategory": { "type": "string", "description": "Vehicle category" },
+        "vehicleReg": { "type": "string", "description": "Vehicle registration number" },
+        "firstWeight": { "type": "number", "description": "First weight" },
+        "secondWeight": { "type": "number", "description": "Second weight" },
+        "thirdWeight": { "type": "number", "description": "Third weight" },
+        "totalPrice": { "type": "number", "description": "Total charge in PKR" },
+        "receivedPrice": { "type": "number", "description": "Received amount in PKR" },
+        "duePrice": { "type": "number", "description": "Calculated due price in PKR" },
+        "createdAt": { "type": "string", "description": "ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["ownerId", "driverId", "driverName", "date", "totalPrice", "receivedPrice", "duePrice"]
+    },
+    "PersonalPerson": {
+      "title": "PersonalPerson",
+      "description": "Person for personal loan and udhar accounts",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique person ID" },
+        "ownerId": { "type": "string", "description": "UID of the owner" },
+        "name": { "type": "string", "description": "Person full name" },
+        "phone": { "type": "string", "description": "Optional contact number" },
+        "notes": { "type": "string", "description": "Optional notes or details" },
+        "createdAt": { "type": "string", "description": "ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["ownerId", "name"]
+    },
+    "PersonalLoan": {
+      "title": "PersonalLoan",
+      "description": "Personal loan record - either borrowed or lent",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique loan transaction ID" },
+        "ownerId": { "type": "string", "description": "UID of the owner" },
+        "personId": { "type": "string", "description": "Unique person ID" },
+        "personName": { "type": "string", "description": "Person name" },
+        "date": { "type": "string", "description": "Transaction date YYYY-MM-DD" },
+        "type": { "type": "string", "enum": ["borrowed", "lent"], "description": "Loan type: borrowed or lent" },
+        "amount": { "type": "number", "description": "Amount in PKR" },
+        "notes": { "type": "string", "description": "Optional notes" },
+        "createdAt": { "type": "string", "description": "ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["ownerId", "personId", "personName", "date", "type", "amount"]
+    },
+    "PersonalRepayment": {
+      "title": "PersonalRepayment",
+      "description": "Repayment made or received against a personal loan",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique repayment ID" },
+        "ownerId": { "type": "string", "description": "UID of the owner" },
+        "personId": { "type": "string", "description": "Unique person ID" },
+        "loanId": { "type": "string", "description": "Unique loan transaction ID" },
+        "date": { "type": "string", "description": "Repayment date YYYY-MM-DD" },
+        "direction": { "type": "string", "enum": ["repaid_borrowed", "received_lent"], "description": "Repaid money borrowed or received money lent" },
+        "amount": { "type": "number", "description": "Repayment amount in PKR" },
+        "notes": { "type": "string", "description": "Optional notes" },
+        "createdAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["ownerId", "personId", "loanId", "date", "direction", "amount"]
+    },
+    "ExpenseCreditor": {
+      "title": "ExpenseCreditor",
+      "description": "Creditor from whom business expenses were bought on credit",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique creditor ID" },
+        "ownerId": { "type": "string", "description": "UID of the owner" },
+        "name": { "type": "string", "description": "Creditor name" },
+        "phone": { "type": "string", "description": "Optional contact number" },
+        "notes": { "type": "string", "description": "Optional notes" },
+        "createdAt": { "type": "string", "description": "ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["ownerId", "name"]
+    },
+    "ExpensePayment": {
+      "title": "ExpensePayment",
+      "description": "Payment installment made towards an expense bought on credit",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique payment ID" },
+        "ownerId": { "type": "string", "description": "UID of the owner" },
+        "expenseId": { "type": "string", "description": "Unique expense ID" },
+        "creditorId": { "type": "string", "description": "Creditor ID" },
+        "date": { "type": "string", "description": "Payment date YYYY-MM-DD" },
+        "amount": { "type": "number", "description": "Payment amount in PKR" },
+        "notes": { "type": "string", "description": "Optional notes" },
+        "createdAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["ownerId", "expenseId", "creditorId", "date", "amount"]
+    },
+    "PersonalData": {
+      "title": "PersonalData",
+      "description": "Owner personal information and kanta profile",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string", "description": "UID of the owner" },
+        "ownerName": { "type": "string", "description": "Name of the owner" },
+        "shopName": { "type": "string", "description": "Shop / Kanta name" },
+        "phone": { "type": "string", "description": "Contact number" },
+        "kantaName": { "type": "string", "description": "Kanta name" },
+        "address": { "type": "string", "description": "Kanta location" },
+        "notes": { "type": "string", "description": "Personal notes" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["ownerId"]
+    },
+    "OtherExpense": {
+      "title": "OtherExpense",
+      "description": "Business operating expenses separate from driver khata",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique expense ID" },
+        "ownerId": { "type": "string", "description": "UID of the owner" },
+        "date": { "type": "string", "description": "Expense date YYYY-MM-DD" },
+        "category": { "type": "string", "description": "Expense category" },
+        "description": { "type": "string", "description": "Description" },
+        "amount": { "type": "number", "description": "Amount in PKR" },
+        "paymentStatus": { "type": "string", "enum": ["cash", "credit"], "description": "Cash paid or bought on credit" },
+        "creditorId": { "type": "string", "description": "Optional creditor ID if on credit" },
+        "creditorName": { "type": "string", "description": "Optional creditor name if on credit" },
+        "paidAmount": { "type": "number", "description": "Amount paid so far in PKR" },
+        "dueAmount": { "type": "number", "description": "Remaining due amount in PKR" },
+        "paymentMethod": { "type": "string", "description": "Payment method" },
+        "createdAt": { "type": "string", "description": "ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["ownerId", "date", "category", "amount", "paymentStatus"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/drivers/{driverId}": {
+      "schema": "Driver",
+      "description": "Independent driver accounts"
+    },
+    "/users/{userId}/kanta_entries/{entryId}": {
+      "schema": "KantaEntry",
+      "description": "Daily vehicle weighing records partitioned by driverId"
+    },
+    "/users/{userId}/personal_people/{personId}": {
+      "schema": "PersonalPerson",
+      "description": "Personal loan and udhar person profiles"
+    },
+    "/users/{userId}/personal_loans/{loanId}": {
+      "schema": "PersonalLoan",
+      "description": "Personal loans borrowed or lent against a person"
+    },
+    "/users/{userId}/personal_repayments/{repayId}": {
+      "schema": "PersonalRepayment",
+      "description": "Repayments recorded against personal loans"
+    },
+    "/users/{userId}/expense_creditors/{creditorId}": {
+      "schema": "ExpenseCreditor",
+      "description": "Creditors for business expenses bought on credit"
+    },
+    "/users/{userId}/expense_payments/{paymentId}": {
+      "schema": "ExpensePayment",
+      "description": "Payments towards expenses bought on credit"
+    },
+    "/users/{userId}/personal_data/profile": {
+      "schema": "PersonalData",
+      "description": "Owner personal information and kanta profile"
+    },
+    "/users/{userId}/other_expenses/{expenseId}": {
+      "schema": "OtherExpense",
+      "description": "Operating expenses separate from driver khata"
+    }
+  }
+}

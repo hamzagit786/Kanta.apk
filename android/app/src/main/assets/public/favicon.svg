@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.25" />
+    </filter>
+  </defs>
+  <!-- Background Rounded Rect -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+  
+  <!-- Subtle inner border highlight -->
+  <rect x="8" y="8" width="496" height="496" rx="104" fill="none" stroke="#60A5FA" stroke-width="4" stroke-opacity="0.3" />
+
+  <!-- Scale Balance Icon (Exact Lucide Scale representation scaled to 512x512) -->
+  <g transform="translate(96, 96) scale(13.333)" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#shadow)">
+    <!-- Center vertical pillar -->
+    <path d="M12 3v18" />
+    <!-- Base stand -->
+    <path d="M7 21h10" />
+    <!-- Top balancing beam -->
+    <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" />
+    <!-- Left pan with strings -->
+    <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+    <!-- Right pan with strings -->
+    <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+  </g>
+</svg>

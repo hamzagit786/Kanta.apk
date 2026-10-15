@@ -1,0 +1,153 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Connection health check
+    match /test/connection {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidDriver(data, userId) {
+      return data.ownerId == userId &&
+        data.name is string && data.name.size() > 0 && data.name.size() <= 150;
+    }
+
+    function isValidKantaEntry(data, userId) {
+      return data.ownerId == userId &&
+        data.driverId is string && data.driverId.size() > 0 &&
+        data.date is string && data.date.size() >= 8 && data.date.size() <= 30 &&
+        data.driverName is string && data.driverName.size() > 0 &&
+        data.totalPrice is number && data.totalPrice >= 0 &&
+        data.receivedPrice is number && data.receivedPrice >= 0 &&
+        data.duePrice is number;
+    }
+
+    function isValidPerson(data, userId) {
+      return data.ownerId == userId &&
+        data.name is string && data.name.size() > 0 && data.name.size() <= 150;
+    }
+
+    function isValidLoan(data, userId) {
+      return data.ownerId == userId &&
+        data.personId is string && data.personId.size() > 0 &&
+        data.date is string && data.date.size() >= 8 && data.date.size() <= 30 &&
+        data.amount is number && data.amount > 0 &&
+        (data.type == 'borrowed' || data.type == 'lent');
+    }
+
+    function isValidRepayment(data, userId) {
+      return data.ownerId == userId &&
+        data.personId is string && data.personId.size() > 0 &&
+        data.loanId is string &&
+        data.date is string && data.date.size() >= 8 && data.date.size() <= 30 &&
+        data.amount is number && data.amount > 0 &&
+        (data.direction == 'repaid_borrowed' || data.direction == 'received_lent');
+    }
+
+    // Rules for business owner tree
+    match /users/{userId} {
+      allow get, list: if isOwner(userId);
+      allow create, update: if isOwner(userId);
+
+      // Independent Drivers directory
+      match /drivers/{driverId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(driverId) && isValidDriver(incoming(), userId);
+        allow update: if isOwner(userId) && isValidId(driverId) && incoming().ownerId == existing().ownerId && isValidDriver(incoming(), userId);
+        allow delete: if isOwner(userId);
+      }
+
+      // Daily vehicle weighing records (strictly linked to a driverId)
+      match /kanta_entries/{entryId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(entryId) && isValidKantaEntry(incoming(), userId);
+        allow update: if isOwner(userId) && isValidId(entryId) && incoming().ownerId == existing().ownerId && isValidKantaEntry(incoming(), userId);
+        allow delete: if isOwner(userId);
+      }
+
+      // Personal Loan & Udhar People Directory
+      match /personal_people/{personId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(personId) && isValidPerson(incoming(), userId);
+        allow update: if isOwner(userId) && isValidId(personId) && incoming().ownerId == existing().ownerId && isValidPerson(incoming(), userId);
+        allow delete: if isOwner(userId);
+      }
+
+      // Personal Loan Transactions (borrowed or lent)
+      match /personal_loans/{loanId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(loanId) && isValidLoan(incoming(), userId);
+        allow update: if isOwner(userId) && isValidId(loanId) && incoming().ownerId == existing().ownerId && isValidLoan(incoming(), userId);
+        allow delete: if isOwner(userId);
+      }
+
+      // Personal Loan Repayments
+      match /personal_repayments/{repayId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(repayId) && isValidRepayment(incoming(), userId);
+        allow update: if isOwner(userId) && isValidId(repayId) && incoming().ownerId == existing().ownerId && isValidRepayment(incoming(), userId);
+        allow delete: if isOwner(userId);
+      }
+
+      // Expense Creditors
+      match /expense_creditors/{creditorId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Expense Payments
+      match /expense_payments/{paymentId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Personal Profile Data
+      match /personal_data/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Other Expenses
+      match /other_expenses/{expenseId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Legacy fallback access so no existing data is locked
+      match /customers/{customerId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /credit_entries/{entryId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /payments/{paymentId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /expenses/{expenseId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // Default deny for anything outside /users/{userId}
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

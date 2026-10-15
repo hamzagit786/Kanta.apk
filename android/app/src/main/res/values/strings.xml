@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Kanta</string>
+    <string name="title_activity_main">Kanta</string>
+    <string name="package_name">com.kanta.app</string>
+    <string name="custom_url_scheme">com.kanta.app</string>
+</resources>
